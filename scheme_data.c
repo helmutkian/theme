@@ -3,7 +3,9 @@
 #include <stdlib.h>
 
 static void scheme_print_string(scheme_string_t *);
+static void scheme_print_cons(scheme_cons_t *);
 static void scheme_free_string(scheme_string_t *);
+static void scheme_free_cons(scheme_cons_t *);
 
 void scheme_print_data(scheme_data_t *data)
 {
@@ -20,6 +22,9 @@ void scheme_print_data(scheme_data_t *data)
   case SCHEME_STRING:
     scheme_print_string(&data->s);
     break;
+  case SCHEME_CONS:
+    scheme_print_cons(&data->cons);
+    break;
   }
 }
 
@@ -28,6 +33,21 @@ static void scheme_print_string(scheme_string_t *str_data)
   int i;
   for (i = 0; i < str_data->length; i++) {
     printf("%c", str_data->str[i]);
+  }
+}
+
+static void scheme_print_cons(scheme_cons_t *cons_data)
+{
+  scheme_cons_t *cell = cons_data;
+
+  while (cell != NULL) {
+    scheme_print_data(cell->car);
+    // Handle "dotted", aka "improper", lists
+    if (cell->cdr->type != SCHEME_CONS) {
+      scheme_print_data(cell->cdr);
+      break;
+    }
+    cell = cell->cdr;
   }
 }
 
@@ -45,4 +65,9 @@ void scheme_free_data(scheme_data_t *data)
 static void scheme_free_string(scheme_string_t *str_data)
 {
   free(str_data->str);
+}
+
+static void scheme_free_cons(scheme_cons_t *cons_data)
+{
+  // TODO
 }
