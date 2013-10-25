@@ -6,6 +6,7 @@ typedef enum {
   , SCHEME_FIXNUM
   , SCHEME_CHAR
   , SCHEME_STRING
+  , SCHEME_CONS
 } scheme_type_t;
 
 typedef struct {

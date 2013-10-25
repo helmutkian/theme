@@ -47,7 +47,7 @@ static void scheme_print_cons(scheme_cons_t *cons_data)
       scheme_print_data(cell->cdr);
       break;
     }
-    cell = cell->cdr;
+    cell = cell->cdr->cons;
   }
 }
 
