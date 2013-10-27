@@ -10,25 +10,22 @@ typedef enum {
   , SCHEME_NIL
 } scheme_type_t;
 
-typedef struct _scheme_data {
+typedef struct scheme_data_s {
   scheme_type_t type;
   union {
     double f;
     int i;
     char c;
     struct {
-      struct scheme_data *car;
-      struct scheme_data *cdr;
+      scheme_data_s *car;
+      scheme_data_s *cdr;
     } cons;
     struct {
       char *arr;
       int length;
     } s;
-  };
+  }
 } scheme_data_t;
-
-void scheme_print_data(scheme_data_t *data);
-void scheme_free_data(scheme_data_t *data);
+      
 
 #endif
-

@@ -2,10 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static void scheme_print_string(scheme_string_t *);
-static void scheme_print_cons(scheme_cons_t *);
-static void scheme_free_string(scheme_string_t *);
-static void scheme_free_cons(scheme_cons_t *);
+static void scheme_print_string(scheme_data_t *);
+static void scheme_free_string(scheme_data_t *);
 
 void scheme_print_data(scheme_data_t *data)
 {
@@ -20,54 +18,48 @@ void scheme_print_data(scheme_data_t *data)
     printf("%c", data->c);
     break;
   case SCHEME_STRING:
-    scheme_print_string(&data->s);
+    scheme_print_string(data);
     break;
   case SCHEME_CONS:
-    scheme_print_cons(&data->cons);
     break;
+  case SCHEME_NIL:
+    printf("()");
   }
 }
 
-static void scheme_print_string(scheme_string_t *str_data)
+void scheme_print_string(scheme_data_t *str_data)
 {
   int i;
-  for (i = 0; i < str_data->length; i++) {
-    printf("%c", str_data->str[i]);
+  for (i = 0; i < str_data->s.length; i++) {
+    printf("%c", str_data->s.arr[i]);
   }
 }
 
-static void scheme_print_cons(scheme_cons_t *cons_data)
-{
-  scheme_cons_t *cell = cons_data;
-
-  while (cell != NULL) {
-    scheme_print_data(cell->car);
-    // Handle "dotted", aka "improper", lists
-    if (cell->cdr->type != SCHEME_CONS) {
-      scheme_print_data(cell->cdr);
-      break;
-    }
-    cell = cell->cdr->cons;
-  }
-}
 
 void scheme_free_data(scheme_data_t *data)
 {
   switch (data->type) {
+  case SCHEME_FLOAT:
+    break;
+  case SCHEME_FIXNUM:
+    break;
+  case SCHEME_CHAR:
+    break;
   case SCHEME_STRING:
-    scheme_free_string(&data->s);
+    scheme_free_string(data);
+    break;
+  case SCHEME_CONS:
+    break;
+  case SCHEME_NIL:
     break;
   }
 
   free(data);
 }
 
-static void scheme_free_string(scheme_string_t *str_data)
+void scheme_free_string(scheme_data_t *str_data)
 {
-  free(str_data->str);
+  free(str_data->s.arr);
 }
 
-static void scheme_free_cons(scheme_cons_t *cons_data)
-{
-  // TODO
-}
+
