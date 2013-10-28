@@ -2,10 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static void scheme_print_string(scheme_data_t *);
-static void scheme_free_string(scheme_data_t *);
+static void scheme_print_string(scheme_data *);
+static void scheme_free_string(scheme_data *);
 
-void scheme_print_data(scheme_data_t *data)
+void scheme_print_data(scheme_data *data)
 {
   switch (data->type) {
   case SCHEME_FLOAT:
@@ -27,7 +27,7 @@ void scheme_print_data(scheme_data_t *data)
   }
 }
 
-void scheme_print_string(scheme_data_t *str_data)
+void scheme_print_string(scheme_data *str_data)
 {
   int i;
   for (i = 0; i < str_data->s.length; i++) {
@@ -36,7 +36,7 @@ void scheme_print_string(scheme_data_t *str_data)
 }
 
 
-void scheme_free_data(scheme_data_t *data)
+void scheme_free_data(scheme_data *data)
 {
   switch (data->type) {
   case SCHEME_FLOAT:
@@ -57,7 +57,7 @@ void scheme_free_data(scheme_data_t *data)
   free(data);
 }
 
-void scheme_free_string(scheme_data_t *str_data)
+void scheme_free_string(scheme_data *str_data)
 {
   free(str_data->s.arr);
 }

@@ -8,15 +8,15 @@ typedef enum {
   , SCHEME_STRING
   , SCHEME_CONS
   , SCHEME_NIL
-} scheme_type_t;
+} scheme_type;
 
 typedef struct {
   char *arr;
   int length;
-} scheme_string_t;
+} scheme_string;
 
 typedef struct _scheme_data {
-  scheme_type_t type;
+  scheme_type type;
   union {
     double f;
     int i;
@@ -25,12 +25,12 @@ typedef struct _scheme_data {
       struct scheme_data *car;
       struct scheme_data *cdr;
     } cons;
-    scheme_string_t s;
+    scheme_string s;
   };
-} scheme_data_t;
+} scheme_data;
 
-void scheme_print_data(scheme_data_t *data);
-void scheme_free_data(scheme_data_t *data);
+void scheme_print_data(scheme_data *data);
+void scheme_free_data(scheme_data *data);
 
 #endif
 
