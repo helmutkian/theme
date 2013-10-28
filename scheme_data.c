@@ -7,7 +7,7 @@ static void _print_fixnum(scheme_data *);
 static void _print_float(scheme_data *);
 static void _print_char(scheme_data *);
 static void _print_string(scheme_data *);
-static void _print_cons(scheme_data *);
+static void _print_pair(scheme_data *);
 static void _print_nil(scheme_data *);
 static void _print_symbol(scheme_data *);
 static void _print_bool(scheme_data *);
@@ -39,7 +39,7 @@ void scheme_print_data(scheme_data *data)
   case SCHEME_STRING:
     _print_string(data);
     break;
-  case SCHEME_CONS:
+  case SCHEME_PAIR:
     break;
   case SCHEME_NIL:
     _print_nil(data);
@@ -76,19 +76,22 @@ void _print_string(scheme_data *str_data)
   }
 }
 
-void _print_cons(scheme_data *cons_data)
+void _print_pair(scheme_data *pair_data)
 {
   scheme_data *cell;
 
-  for (cell = cons_data
+  printf("(");
+  for (cell = pair_data
      ; cell->type != SCHEME_NULL
-     ; cell = cell->cons.cdr) {
-    scheme_print_data(cell->cons.car);
-    if (cell->cons.cdr->type != SCHEME_CONS) {
-      scheme_print_data(cell->cons.cdr);
+     ; cell = cell->pair.cdr) {
+    scheme_print_data(cell->pair.car);
+    // Handle "improper", or "dotted", lists
+    if (cell->pair.cdr->type != SCHEME_PAIR) {
+      scheme_print_data(cell->pair.cdr);
       break;
     }
   }
+  printf(")");
 }
 
 void _print_nil(scheme_data *str_data)
@@ -123,7 +126,7 @@ void scheme_free_data(scheme_data *data)
   case SCHEME_STRING:
     _free_string(data);
     break;
-  case SCHEME_CONS:
+  case SCHEME_PAIR:
     break;
   case SCHEME_NIL:
     break;

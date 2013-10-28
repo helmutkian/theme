@@ -34,7 +34,7 @@ typedef struct _scheme_data {
     int i;                      // SCHEME_FIXNUM
     char c;                     // SCHEME_CHAR
     char *sym;                  // SCHEME_SYMBOL
-    scheme_string str;          // SCHEME_STR
+    scheme_string str;          // SCHEME_STRING
     unsigned char b;            // SCHEME_BOOL
     scheme_ratio r;             // SCHEME_RATIO    
   };
