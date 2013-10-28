@@ -25,8 +25,8 @@ typedef struct _scheme_data {
     char *sym;
     scheme_string str;
     struct {
-      struct scheme_data *car;
-      struct scheme_data *cdr;
+      struct _scheme_data *car;
+      struct _scheme_data *cdr;
     } cons;
   };
 } scheme_data;
