@@ -10,6 +10,11 @@ typedef enum {
   , SCHEME_NIL
 } scheme_type_t;
 
+typedef struct {
+  char *arr;
+  int length;
+} scheme_string_t;
+
 typedef struct _scheme_data {
   scheme_type_t type;
   union {
@@ -20,10 +25,7 @@ typedef struct _scheme_data {
       struct scheme_data *car;
       struct scheme_data *cdr;
     } cons;
-    struct {
-      char *arr;
-      int length;
-    } s;
+    scheme_string_t s;
   };
 } scheme_data_t;
 
