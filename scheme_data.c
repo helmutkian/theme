@@ -2,37 +2,57 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static void scheme_print_string(scheme_data *);
+static void _print_fixnum(scheme_data *);
+static void _print_float(scheme_data *);
+static void _print_char(scheme_data *);
+static void _print_string(scheme_data *);
+// static void _print_cons(scheme_data *);
+static void _print_symbol(scheme_data *);
 
-static void scheme_free_string(scheme_data *);
-static void scheme_free_symbol(scheme_data *);
+static void _free_string(scheme_data *);
+static void _free_symbol(scheme_data *);
 
 void scheme_print_data(scheme_data *data)
 {
   switch (data->type) {
-  case SCHEME_FLOAT:
-    printf("%f", data->f);
+  case FLOAT:
+    _print_float(data);
     break;
-  case SCHEME_FIXNUM:
-    printf("%d", data->i);
+  case FIXNUM:
+    _print_fixnum(data);
     break;
-  case SCHEME_CHAR:
-    printf("%c", data->c);
+  case CHAR:
+    _print_char(data);
     break;
-  case SCHEME_STRING:
-    scheme_print_string(data);
+  case STRING:
+    _print_string(data);
     break;
-  case SCHEME_CONS:
+  case CONS:
     break;
-  case SCHEME_NIL:
+  case NIL:
     printf("()");
-  case SCHEME_SYMBOL:
-    puts(data->sym);
+  case SYMBOL:
+    _print_symbol(data);
     break;
   }
 }
 
-void scheme_print_string(scheme_data *str_data)
+void _print_fixnum(scheme_data *fixnum_data)
+{
+  printf("%d", data->i);
+}
+
+void _print_float(scheme_data *float_data)
+{
+  printf("%f", data->f);
+}
+
+void _print_char(scheme_data *char_data)
+{
+  printf("%c", data->c);
+}
+
+void _print_string(scheme_data *str_data)
 {
   int i;
   for (i = 0; i < str_data->str.length; i++) {
@@ -40,38 +60,42 @@ void scheme_print_string(scheme_data *str_data)
   }
 }
 
+void _print_symbol(scheme_data *sym_data)
+{
+  printf("%s", sym_data->sym);
+}
+
 
 void scheme_free_data(scheme_data *data)
 {
   switch (data->type) {
-  case SCHEME_FLOAT:
+  case FLOAT:
     break;
-  case SCHEME_FIXNUM:
+  case FIXNUM:
     break;
-  case SCHEME_CHAR:
+  case CHAR:
     break;
-  case SCHEME_STRING:
-    scheme_free_string(data);
+  case STRING:
+    _free_string(data);
     break;
-  case SCHEME_CONS:
+  case CONS:
     break;
-  case SCHEME_NIL:
+  case NIL:
     break;
-  case SCHEME_SYMBOL:
-    scheme_free_symbol(data);
+  case SYMBOL:
+    _free_symbol(data);
     break;
   }
- }
 
   free(data);
 }
 
-void scheme_free_string(scheme_data *str_data)
+void _free_string(scheme_data *str_data)
 {
   free(str_data->str.arr);
 }
 
-void scheme_free_symbol(scheme_data *sym_data)
+void _free_symbol(scheme_data *sym_data)
 {
   free(sym_data->sym);
 }

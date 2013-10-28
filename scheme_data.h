@@ -2,13 +2,13 @@
 #define SCHEME_DATA_H
 
 typedef enum {
-  SCHEME_FLOAT
-  , SCHEME_FIXNUM
-  , SCHEME_CHAR
-  , SCHEME_STRING
-  , SCHEME_CONS
-  , SCHEME_NIL
-  , SCHEME_SYMBOL
+  FLOAT
+  , FIXNUM
+  , CHAR
+  , STRING
+  , CONS
+  , NIL
+  , SYMBOL
 } scheme_type;
 
 typedef struct {
