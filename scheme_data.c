@@ -3,7 +3,9 @@
 #include <stdlib.h>
 
 static void scheme_print_string(scheme_data *);
+
 static void scheme_free_string(scheme_data *);
+static void scheme_free_symbol(scheme_data *);
 
 void scheme_print_data(scheme_data *data)
 {
@@ -24,14 +26,17 @@ void scheme_print_data(scheme_data *data)
     break;
   case SCHEME_NIL:
     printf("()");
+  case SCHEME_SYMBOL:
+    puts(data->sym);
+    break;
   }
 }
 
 void scheme_print_string(scheme_data *str_data)
 {
   int i;
-  for (i = 0; i < str_data->s.length; i++) {
-    printf("%c", str_data->s.arr[i]);
+  for (i = 0; i < str_data->str.length; i++) {
+    printf("%c", str_data->str.arr[i]);
   }
 }
 
@@ -52,14 +57,23 @@ void scheme_free_data(scheme_data *data)
     break;
   case SCHEME_NIL:
     break;
+  case SCHEME_SYMBOL:
+    scheme_free_symbol(data);
+    break;
   }
+ }
 
   free(data);
 }
 
 void scheme_free_string(scheme_data *str_data)
 {
-  free(str_data->s.arr);
+  free(str_data->str.arr);
+}
+
+void scheme_free_symbol(scheme_data *sym_data)
+{
+  free(sym_data->sym);
 }
 
 

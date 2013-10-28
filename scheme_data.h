@@ -8,6 +8,7 @@ typedef enum {
   , SCHEME_STRING
   , SCHEME_CONS
   , SCHEME_NIL
+  , SCHEME_SYMBOL
 } scheme_type;
 
 typedef struct {
@@ -21,11 +22,12 @@ typedef struct _scheme_data {
     double f;
     int i;
     char c;
+    char *sym;
+    scheme_string str;
     struct {
       struct scheme_data *car;
       struct scheme_data *cdr;
     } cons;
-    scheme_string s;
   };
 } scheme_data;
 
