@@ -6,9 +6,7 @@
 
 // Maximum number of digits in numbers (fixnums/flonums)
 #define NUM_BUF_SIZE 100
-#define CHAR_BUF_SIZE 15
 #define MIN_CHAR_BUF_SIZE 3
-#define STR_ARR_SIZE 256
 
 
 // Test to see if character is a delimiter
@@ -31,7 +29,6 @@ scheme_parse_ret
 parse_number(FILE *stream, scheme_data **data)
 {
   char c;
-  char buf[NUM_BUF_SIZE];
   read_stream *rstream;
   scheme_parse_ret success = PARSE_SUCCESS;
 
@@ -138,17 +135,5 @@ parse_string(FILE *stream, scheme_data **data)
   
 }
   
-void
-_resize_arr(char **arr, int *size)
-{
-  char *new_arr;
-  int new_size = *size * 2;
-
-  size *= 2;
-  new_arr = malloc(sizeof(char) * new_size);
-  memcpy(*new_arr, arr, size);
-  *arr = new_arr;
-  *size = new_size;
-}
   
 */
