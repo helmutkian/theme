@@ -31,7 +31,7 @@ int main()
   test_parser("#\\newline", parse_char);
   test_parser("#\\space", parse_char);
   test_parser("#\\tab", parse_char);
-  test_parser("#\\a", parse_char);
+  test_parser("#\\a", parse_char); 
 
   return 0;
 }
