@@ -2,11 +2,11 @@
 #define SCHEME_DATA_H
 
 typedef enum {
-  SCHEME_FLOAT
+  SCHEME_FLONUM
   , SCHEME_FIXNUM
   , SCHEME_CHAR
   , SCHEME_STRING
-  , SCHEME_CONS
+  , SCHEME_PAIR
   , SCHEME_NIL
   , SCHEME_SYMBOL
   , SCHEME_BOOL
@@ -29,8 +29,8 @@ typedef struct _scheme_data {
     struct {
       struct _scheme_data *car;
       struct _scheme_data *cdr;
-    } cons;                     // SCHEME_CONS
-    double f;                   // SCHEME_FLOAT
+    } pair;                     // SCHEME_PAIR
+    double f;                   // SCHEME_FLONUM
     int i;                      // SCHEME_FIXNUM
     char c;                     // SCHEME_CHAR
     char *sym;                  // SCHEME_SYMBOL
@@ -40,9 +40,14 @@ typedef struct _scheme_data {
   };
 } scheme_data;
 
-scheme_data *scheme_alloc_data(scheme_type type);
-void scheme_print_data(scheme_data *data);
-void scheme_free_data(scheme_data *data);
+scheme_data *
+scheme_data_alloc(scheme_type type);
+
+void 
+scheme_print_data(scheme_data *data);
+
+void 
+scheme_free_data(scheme_data *data);
 
 #endif
 

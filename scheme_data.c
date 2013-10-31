@@ -3,32 +3,56 @@
 #include <stdlib.h>
 #include <assert.h>
 
-static void _print_fixnum(scheme_data *);
-static void _print_float(scheme_data *);
-static void _print_char(scheme_data *);
-static void _print_string(scheme_data *);
-static void _print_pair(scheme_data *);
-static void _print_nil(scheme_data *);
-static void _print_symbol(scheme_data *);
-static void _print_bool(scheme_data *);
-static void _print_ratio(scheme_data *)
 
-static void _free_string(scheme_data *);
-static void _free_symbol(scheme_data *);
+static void 
+_print_fixnum(scheme_data *);
 
-scheme_data *scheme_alloc_data(scheme_type type)
+static void 
+_print_flonum(scheme_data *);
+
+static void 
+_print_char(scheme_data *);
+
+static void 
+_print_string(scheme_data *);
+
+static void 
+_print_pair(scheme_data *);
+
+static void
+_print_nil(scheme_data *);
+
+static void
+_print_symbol(scheme_data *);
+
+static void
+_print_bool(scheme_data *);
+
+static void 
+_print_ratio(scheme_data *);
+
+static void 
+_free_string(scheme_data *);
+
+static void 
+_free_symbol(scheme_data *);
+
+
+scheme_data *
+scheme_data_alloc(scheme_type type)
 {
-  scheme_data *data = malloc(size_of(scheme_data));
+  scheme_data *data = malloc(sizeof(scheme_data));
   assert(data != NULL);
   data->type = type;
   return data;
 }
 
-void scheme_print_data(scheme_data *data)
+void 
+scheme_print_data(scheme_data *data)
 {
   switch (data->type) {
-  case SCHEME_FLOAT:
-    _print_float(data);
+  case SCHEME_FLONUM:
+    _print_flonum(data);
     break;
   case SCHEME_FIXNUM:
     _print_fixnum(data);
@@ -53,22 +77,27 @@ void scheme_print_data(scheme_data *data)
   }
 }
 
-void _print_fixnum(scheme_data *fixnum_data)
+
+void 
+_print_fixnum(scheme_data *fixnum_data)
 {
-  printf("%d", data->i);
+  printf("%d", fixnum_data->i);
 }
 
-void _print_float(scheme_data *float_data)
+void 
+_print_flonum(scheme_data *flonum_data)
 {
-  printf("%f", data->f);
+  printf("%f", flonum_data->f);
 }
 
-void _print_char(scheme_data *char_data)
+void 
+_print_char(scheme_data *char_data)
 {
-  printf("%c", data->c);
+  printf("%c", char_data->c);
 }
 
-void _print_string(scheme_data *str_data)
+void 
+_print_string(scheme_data *str_data)
 {
   int i;
   for (i = 0; i < str_data->str.length; i++) {
@@ -76,13 +105,14 @@ void _print_string(scheme_data *str_data)
   }
 }
 
-void _print_pair(scheme_data *pair_data)
+void 
+_print_pair(scheme_data *pair_data)
 {
   scheme_data *cell;
 
   printf("(");
   for (cell = pair_data
-     ; cell->type != SCHEME_NULL
+     ; cell->type != SCHEME_NIL
      ; cell = cell->pair.cdr) {
     scheme_print_data(cell->pair.car);
     // Handle "improper", or "dotted", lists
@@ -94,30 +124,35 @@ void _print_pair(scheme_data *pair_data)
   printf(")");
 }
 
-void _print_nil(scheme_data *str_data)
+void 
+_print_nil(scheme_data *str_data)
 {
   printf("()");
 }
 
-void _print_symbol(scheme_data *sym_data)
+void 
+_print_symbol(scheme_data *sym_data)
 {
   printf("%s", sym_data->sym);
 }
 
-void _print_bool(scheme_data *bool_data)
+void 
+_print_bool(scheme_data *bool_data)
 {
   printf("#%c", bool_data->b ? 't' : 'f');
 }
 
-void _print_ratio(scheme_data *ratio_data)
+void 
+_print_ratio(scheme_data *ratio_data)
 {
   printf("%d/%d", ratio_data->r.num, ratio_data->r.denom);
 }
 
-void scheme_free_data(scheme_data *data)
+void 
+scheme_free_data(scheme_data *data)
 {
   switch (data->type) {
-  case SCHEME_FLOAT:
+  case SCHEME_FLONUM:
     break;
   case SCHEME_FIXNUM:
     break;
@@ -142,12 +177,14 @@ void scheme_free_data(scheme_data *data)
   free(data);
 }
 
-void _free_string(scheme_data *str_data)
+void 
+_free_string(scheme_data *str_data)
 {
   free(str_data->str.arr);
 }
 
-void _free_symbol(scheme_data *sym_data)
+void 
+_free_symbol(scheme_data *sym_data)
 {
   free(sym_data->sym);
 }
