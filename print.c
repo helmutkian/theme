@@ -22,6 +22,6 @@ DEF_PRINTER(string)
   unsigned int i, len = val->string.len;
 
   for (i = 0; i < len; i++) {
-    fputc(val->string.chars[i], out);
+    fputc(val->string.arr[i], out);
   }
 }

@@ -2,7 +2,16 @@
 #include <ctype.h>
 #include <string.h>
 
-#define DEF_READER(type_) Scm_ReaderResult Scm_read_##type_(FILE *in, Scm_Value *val)
+// ************************************************************
+// ************************************************************
+// DEF_READER : Template for reader function headers
+// ************************************************************
+#define DEF_READER(type_, strm_, val_) Scm_ReaderResult Scm_read_##type_(FILE *strm_, Scm_Value *val_)
+// ************************************************************
+// DEF_READER(foo, input_stream, scheme_data) =>
+// Scm_ReaderResult Scm_read_foo(FILE *input_stream, Scm_Value scheme_data)
+// ************************************************************
+// ************************************************************
 
 void ungets(char *s, FILE *f)
 {
@@ -14,7 +23,7 @@ void ungets(char *s, FILE *f)
 }
   
 
-DEF_READER(integer)
+DEF_READER(integer, in, val)
 {
   char c;
   char buf[BUF_LEN] = {0};
@@ -52,7 +61,7 @@ DEF_READER(integer)
   }
 }
 
-DEF_READER(real)
+DEF_READER(real, in, val)
 {
   char c;
   char buf[BUF_LEN] = {0};
@@ -95,7 +104,7 @@ DEF_READER(real)
   }
 }
     
-DEF_READER(character)
+DEF_READER(character, in, val)
 {
   char c, special_char;
   char buf[BUF_LEN] = {0};
@@ -142,11 +151,43 @@ DEF_READER(character)
   val->type = CHARACTER;
   return READ_SUCCESS;
 }
-    
 
-  
+DEF_READER(string, in, val)
+{
+  char c;
+  unsigned int i;
 
+  if ((c = fgetc(in)) != '\"') {
+    ungetc(c, in);
+    return READ_FAIL;
+  }
+
+  for (i = 0; (c = fgetc(in)) != '\"'; i++) {
+    if (EOF == c) {
+      val->string.arr[i] = 0;
+      ungets(val->string.arr, in);
+      return READ_FAIL;
+    } else if ('\\' == c) {
+      c = fgetc(in);
+      if ('n' == tolower(c)) {
+	val->string.arr[i] = '\n';
+      } else if ('t' == tolower(c)) {
+	val->string.arr[i] = '\t';
+      } else if ('\"' == c) {
+	val->string.arr[i] = '\"';
+      } else {
+	val->string.arr[i] = 0;
+	ungets(val->string.arr, in);
+	return READ_FAIL;
+      }
+    } else {
+      val->string.arr[i] = c;
+    }
+  }
+
+  val->type = STRING;
+  val->string.len = i;
+  return READ_SUCCESS;
+}
+      
   
-	
-	
-    

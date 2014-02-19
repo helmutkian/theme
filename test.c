@@ -15,6 +15,9 @@
 
 #define RUN_READ_TEST(type_, s) GET_READ_TEST(type_)(s)
 
+// ************************************************************
+// Reader test constructor
+// ************************************************************
 
 void test_reader(char *test_name, Scm_Reader reader, char *expected, Scm_Printer printer)
 {
@@ -39,13 +42,21 @@ void test_reader(char *test_name, Scm_Reader reader, char *expected, Scm_Printer
   fclose(in);
 }
 
-DEF_READ_TEST(integer)
-DEF_READ_TEST(real)
+// ************************************************************
+// Reader test
+// ************************************************************
+
+DEF_READ_TEST(integer);
+DEF_READ_TEST(real);
 DEF_READ_TEST(character);
+DEF_READ_TEST(string);
+
+// ************************************************************
+// Run Tests
+// ************************************************************
 
 int main()
 {
-
 
   RUN_READ_TEST(integer, "1");
   RUN_READ_TEST(integer, "-3");
@@ -61,6 +72,9 @@ int main()
   RUN_READ_TEST(character, "#\\1");
   RUN_READ_TEST(character, "#\\F");
   RUN_READ_TEST(character, "#\\newline");
+
+  RUN_READ_TEST(string, "\"hello world\"");
+  RUN_READ_TEST(string, "\" \\\"quoted\\\" \"");
 
   return 0;
 }

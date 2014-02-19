@@ -3,7 +3,8 @@
 
 #include "scm_value.h"
 #include <stdio.h>
-#include <stdlib.h>
+
+#define DECL_READER(type_) Scm_ReaderResult Scm_read_##type_(FILE *, Scm_Value *)
 
 #define BUF_LEN 256
 
@@ -13,9 +14,11 @@ typedef Scm_ReaderResult (*Scm_Reader)(FILE *, Scm_Value *);
 
 static void ungets(char *s, FILE *f);
 
-Scm_ReaderResult Scm_read_integer(FILE *in, Scm_Value *val);
-Scm_ReaderResult Scm_read_real(FILE *in, Scm_Value *val);
-Scm_ReaderResult Scm_read_character(FILE *in, Scm_Value *val);
+
+DECL_READER(integer);
+DECL_READER(real);
+DECL_READER(character);
+DECL_READER(string);
 
 
 #endif
