@@ -3,14 +3,15 @@
 
 #define MAX_STRING_SIZE 1000
 
-enum { INTEGER, REAL, CHARACTER, STRING };
+enum { 
+    INTEGER
+  , REAL
+  , CHARACTER
+  , STRING
+  , PAIR 
+};
 
 typedef int Scm_Type;
-
-typedef struct {
-  unsigned int len;
-  char arr[MAX_STRING_SIZE];
-} Scm_String;
 
 typedef struct Scm_Value {
   Scm_Type type;
@@ -22,6 +23,10 @@ typedef struct Scm_Value {
       unsigned int len;
       char arr[MAX_STRING_SIZE];
     } string;
+    struct {
+      struct Scm_Value *car;
+      struct Scm_Value *cdr;
+    } pair;
   };
 } Scm_Value;
 

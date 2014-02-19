@@ -6,7 +6,7 @@
 // ************************************************************
 // DEF_READER : Template for reader function headers
 // ************************************************************
-#define DEF_READER(type_, strm_, val_) Scm_ReaderResult Scm_read_##type_(FILE *strm_, Scm_Value *val_)
+#define DEF_READER(type_, strm_, val_) Scm_ReaderResult GET_READER(type_)(FILE *strm_, Scm_Value *val_)
 // ************************************************************
 // DEF_READER(foo, input_stream, scheme_data) =>
 // Scm_ReaderResult Scm_read_foo(FILE *input_stream, Scm_Value scheme_data)
@@ -190,4 +190,25 @@ DEF_READER(string, in, val)
   return READ_SUCCESS;
 }
       
+// ************************************************************
+// ************************************************************
+
+DEF_READER(atom, in, val)
+{
+  unsigned int i;
+  Scm_Reader atom_readers[4] = { 
+      GET_READER(integer)
+    , GET_READER(real)
+    , GET_READER(character)
+    , GET_READER(string)
+  };
   
+
+  for (i = 0; i < 4; i++) {
+    if (atom_readers[i](in, val)) {
+      return READ_SUCCESS;
+    }
+  }
+
+  return READ_FAIL;
+}
