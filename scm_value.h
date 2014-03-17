@@ -8,6 +8,7 @@ enum {
   , REAL
   , CHARACTER
   , STRING
+  , SYMBOL
   , PAIR 
 };
 
@@ -19,6 +20,7 @@ typedef struct Scm_Value {
     int        integer;
     double     real;
     char       character;
+    char       symbol[MAX_SYMBOL_SIZE]; // cstring
     struct {
       unsigned int len;
       char arr[MAX_STRING_SIZE];

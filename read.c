@@ -2,16 +2,6 @@
 #include <ctype.h>
 #include <string.h>
 
-// ************************************************************
-// ************************************************************
-// DEF_READER : Template for reader function headers
-// ************************************************************
-#define DEF_READER(type_, strm_, val_) Scm_ReaderResult GET_READER(type_)(FILE *strm_, Scm_Value *val_)
-// ************************************************************
-// DEF_READER(foo, input_stream, scheme_data) =>
-// Scm_ReaderResult Scm_read_foo(FILE *input_stream, Scm_Value scheme_data)
-// ************************************************************
-// ************************************************************
 
 void ungets(char *s, FILE *f)
 {
@@ -23,7 +13,7 @@ void ungets(char *s, FILE *f)
 }
   
 
-DEF_READER(integer, in, val)
+int read_fixnum(FILE *in, struct value *val)
 {
   char c;
   char buf[BUF_LEN] = {0};
@@ -53,15 +43,15 @@ DEF_READER(integer, in, val)
   }
 
   if (buf[0] != 0) {
-    val->type = INTEGER;
-    val->integer = atoi(buf) * (neg ? -1 : 1);
+    val->type = FIXNUM;
+    val->fixnum = atoi(buf) * (neg ? -1 : 1);
     return READ_SUCCESS;
   } else {
     return READ_FAIL;
   }
 }
 
-DEF_READER(real, in, val)
+int read_flonum(FILE *in, struct value *val)
 {
   char c;
   char buf[BUF_LEN] = {0};
@@ -95,8 +85,8 @@ DEF_READER(real, in, val)
   }
 
   if (decimal_seen) {
-    val->real = atof(buf) * (neg ? -1 : 1);
-    val->type = REAL;
+    val->flonum = atof(buf) * (neg ? -1 : 1);
+    val->type = FLONUM;
     return READ_SUCCESS;
   } else {
     ungets(buf, in);
@@ -104,7 +94,7 @@ DEF_READER(real, in, val)
   }
 }
     
-DEF_READER(character, in, val)
+int read_character(FILE *in, struct value *val)
 {
   char c, special_char;
   char buf[BUF_LEN] = {0};
@@ -152,7 +142,7 @@ DEF_READER(character, in, val)
   return READ_SUCCESS;
 }
 
-DEF_READER(string, in, val)
+int read_string(FILE *in, struct value *val)
 {
   char c;
   unsigned int i;
@@ -178,7 +168,7 @@ DEF_READER(string, in, val)
       } else {
 	val->string.arr[i] = 0;
 	ungets(val->string.arr, in);
-	return READ_FAIL;
+	return READ_MISMATCH_DELIM;
       }
     } else {
       val->string.arr[i] = c;
@@ -189,26 +179,26 @@ DEF_READER(string, in, val)
   val->string.len = i;
   return READ_SUCCESS;
 }
+
+int read_symbol(FILE *in, struct value *val)
+{
+  char c;
+  const char valid_chars[] = "~!@#$%^&*-+=\/";
+  unsigned int i;
+
+  for (i = 0; !isspace(c = fgetc(in)); i++) {
+    if (!(isalnum(i) || strchr(valid_chars, c))) {
+      val->symbol[i+1] = 0;
+      ungets(val->symbol, in);
+      return READ_INVALID_CHAR;
+    } 
+  }
+      
+  val->type = SYMBOL;
+  return READ_SUCCESS;
+}
       
 // ************************************************************
 // ************************************************************
 
-DEF_READER(atom, in, val)
-{
-  unsigned int i;
-  Scm_Reader atom_readers[4] = { 
-      GET_READER(integer)
-    , GET_READER(real)
-    , GET_READER(character)
-    , GET_READER(string)
-  };
-  
 
-  for (i = 0; i < 4; i++) {
-    if (atom_readers[i](in, val)) {
-      return READ_SUCCESS;
-    }
-  }
-
-  return READ_FAIL;
-}
