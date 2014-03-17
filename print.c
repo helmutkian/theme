@@ -1,23 +1,22 @@
 #include "print.h"
 
-#define DEF_PRINTER(type_) void Scm_print_##type_(FILE *out, Scm_Value *val)
 
-DEF_PRINTER(integer)
+void print_integer(FILE *out, struct value *val)
 {
-  fprintf(out, "%d", val->integer);
+  fvoid printf(out, "%d", val->integer);
 }
 
-DEF_PRINTER(real)
+void print_real(FILE *out, struct value *val)
 {
-  fprintf(out, "%f", val->real);
+  fvoid printf(out, "%f", val->real);
 }
 
-DEF_PRINTER(character)
+void print_character(FILE *out, struct value *val)
 {
-  fprintf(out, "%c", val->character);
+  fvoid printf(out, "%c", val->character);
 }
 
-DEF_PRINTER(string)
+void print_string(FILE *out, struct value *val)
 {
   unsigned int i, len = val->string.len;
 

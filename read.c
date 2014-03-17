@@ -11,8 +11,10 @@ void ungets(char *s, FILE *f)
     ungetc(s[i], f);
   }
 }
+
   
 
+/* (+|-|/0)[0-9]+ where /0 is a null token */
 int read_fixnum(FILE *in, struct value *val)
 {
   char c;
@@ -51,6 +53,7 @@ int read_fixnum(FILE *in, struct value *val)
   }
 }
 
+/* (+|-|\0)[0-9]*.[0-9]+ */
 int read_flonum(FILE *in, struct value *val)
 {
   char c;

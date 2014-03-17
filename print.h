@@ -4,12 +4,12 @@
 #include "scm_value.h"
 #include <stdio.h>
 
-typedef void (*Scm_Printer)(FILE *, Scm_Value *);
+typedef void (*printer)(FILE *, struct value *);
 
-void Scm_print_integer(FILE *out, Scm_Value *val);
-void Scm_print_real(FILE *out, Scm_Value *val);
-void Scm_print_character(FILE *out, Scm_Value *val);
-void Scm_print_string(FILE *out, Scm_Value *val);
+void print_integer(FILE *out, struct value *val);
+void print_real(FILE *out, struct value *val);
+void print_character(FILE *out, struct value *val);
+void print_string(FILE *out, struct value *val);
 
 
 
