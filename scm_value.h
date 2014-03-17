@@ -14,7 +14,7 @@ enum {
 };
 
 
-typedef struct value {
+struct value {
   int type;
   union {
     int        integer;
@@ -26,8 +26,8 @@ typedef struct value {
       char arr[MAX_STRING_SIZE];
     } string;
     struct {
-      struct struct value *car;
-      struct struct value *cdr;
+      struct value *car;
+      struct value *cdr;
     } pair;
   };
 };

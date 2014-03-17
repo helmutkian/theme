@@ -3,17 +3,17 @@
 
 void print_integer(FILE *out, struct value *val)
 {
-  fvoid printf(out, "%d", val->integer);
+  fprintf(out, "%d", val->integer);
 }
 
 void print_real(FILE *out, struct value *val)
 {
-  fvoid printf(out, "%f", val->real);
+  fprintf(out, "%f", val->real);
 }
 
 void print_character(FILE *out, struct value *val)
 {
-  fvoid printf(out, "%c", val->character);
+  fprintf(out, "%c", val->character);
 }
 
 void print_string(FILE *out, struct value *val)
