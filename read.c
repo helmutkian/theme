@@ -124,13 +124,13 @@ int read_character(FILE *in, struct value *val)
     strcpy(special_str, "space");
   }
 
-  if (special_str[0] != 0) {
+  if (special_str[0]) {
     special_len = strlen(special_str);
     for (i = 1; i < special_len; i++) {
       buf[i-1] = c = fgetc(in);
       if (tolower(c) != special_str[i]) {
 	ungets(buf, in);
-	break;
+	return READ_INVALID_CHAR;
       }
     }
     val->character = special_char;
@@ -138,8 +138,16 @@ int read_character(FILE *in, struct value *val)
     val->character = c;
   }
 
-  val->type = CHARACTER;
-  return READ_SUCCESS;
+  if (isspace(c = fgetc(in))) {
+    val->type = CHARACTER;
+    return READ_SUCCESS;
+  } else if (special_str[0]) {
+    ungets(buf, in);
+  } else {
+    ungetc(c, in);
+  }
+
+  return READ_INVALID_CHAR;
 }
 
 int read_string(FILE *in, struct value *val)
@@ -156,7 +164,7 @@ int read_string(FILE *in, struct value *val)
     if (EOF == c) {
       val->string.arr[i] = 0;
       ungets(val->string.arr, in);
-      return READ_FAIL;
+      return READ_MISMATCH_DELIM;
     } else if ('\\' == c) {
       c = fgetc(in);
       if ('n' == tolower(c)) {
@@ -168,7 +176,7 @@ int read_string(FILE *in, struct value *val)
       } else {
 	val->string.arr[i] = 0;
 	ungets(val->string.arr, in);
-	return READ_MISMATCH_DELIM;
+	return READ_INVALID_CHAR;
       }
     } else {
       val->string.arr[i] = c;

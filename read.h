@@ -14,7 +14,7 @@ enum {
   READ_COMMENT          /* Comment read. */
   READ_FAIL,            /* Read failed */
   READ_MISMATCH_DELIM,  /* No closing delimiter (eg double-quote or paren). */
-  READ_INVALID_CHAR     /* Invalid char in symbol */
+  READ_INVALID_CHAR     /* Invalid special char, escape char, char in symbol */
 };
 typedef int (*reader)(FILE *, struct value *);
 
