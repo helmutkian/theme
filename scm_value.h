@@ -5,8 +5,8 @@
 #define MAX_STRING_SIZE 1000
 
 enum { 
-    INTEGER
-  , REAL
+    FIXNUM
+  , FLONUM
   , CHARACTER
   , STRING
   , SYMBOL
