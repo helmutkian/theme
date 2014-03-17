@@ -3,8 +3,8 @@
 #include "read.h"
 #include "print.h"
 
-#define GET_READER(type_) Scm_read_##type_
-#define GET_PRINTER(type_) Scm_print_##type_
+#define GET_READER(type_) read_##type_
+#define GET_PRINTER(type_) print_##type_
 #define GET_READ_TEST(type_) test_read_##type_
 
 #define DEF_READ_TEST(type_) \

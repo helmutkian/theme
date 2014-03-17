@@ -194,7 +194,7 @@ int read_string(FILE *in, struct value *val)
 int read_symbol(FILE *in, struct value *val)
 {
   char c;
-  const char valid_chars[] = "~!@#$%^&*-+=\/";
+  const char valid_chars[] = "~!@#$%^&*-+=/\\";
   unsigned int i;
 
   for (i = 0; !isspace(c = fgetc(in)); i++) {
