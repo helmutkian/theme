@@ -13,18 +13,19 @@ enum {
   , PAIR 
 };
 
+struct string {
+  unsigned int len;
+  char arr[MAX_STRING_SIZE];
+};
 
 struct value {
   int type;
   union {
-    int        fixnum;
-    double     flonum;
-    char       character;
-    char       symbol[MAX_SYMBOL_SIZE]; // cstring
-    struct {
-      unsigned int len;
-      char arr[MAX_STRING_SIZE];
-    } string;
+    int           fixnum;
+    double        flonum;
+    char          character;
+    char          symbol[MAX_SYMBOL_SIZE]; // cstring
+    struct string string;
     struct {
       struct value *car;
       struct value *cdr;
