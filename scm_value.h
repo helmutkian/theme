@@ -17,8 +17,8 @@ enum {
 struct value {
   int type;
   union {
-    int        integer;
-    double     real;
+    int        fixnum;
+    double     flonum;
     char       character;
     char       symbol[MAX_SYMBOL_SIZE]; // cstring
     struct {
