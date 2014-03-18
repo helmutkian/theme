@@ -12,7 +12,11 @@ void ungets(char *s, FILE *f)
   }
 }
 
+int isdelim(char c)
+{
   
+  return isspace(c) || ('\'' == c) || (';' == c);
+}
 
 /* (+|-|/0)[0-9]+ where /0 is a null token */
 int read_fixnum(FILE *in, struct value *val)
@@ -35,11 +39,12 @@ int read_fixnum(FILE *in, struct value *val)
   while ((EOF != (c = fgetc(in))) && (i < BUF_LEN)) {
     if (isdigit(c)) { 
       buf[i] = c;
-    } else if ('.' == c) {
-      ungets(buf, in);
-      return READ_FAIL;
-    } else {
+    } else if (isdelim(c)) {
+      ungetc(c, in);
       break;
+    } else {
+      ungets(buf, in);
+      return READ_INVALID_CHAR;
     }
     i++;
   }
@@ -185,14 +190,16 @@ int read_symbol(FILE *in, struct value *val)
 {
   char c;
   const char valid_chars[] = "~!@#$%^&*-+=/\\";
-  unsigned int i;
+  unsigned int i, alpha_seen = 0;
 
   for (i = 0; !isspace(c = fgetc(in)); i++) {
-    if (!(isalnum(i) || strchr(valid_chars, c))) {
+    if (!(isalnum(c) || strchr(valid_chars, c))) {
       val->symbol[i+1] = 0;
       ungets(val->symbol, in);
       return READ_INVALID_CHAR;
-    } 
+    } else if (!alpha_seen && isalpha(c)) {
+      alpha_seen = 1;
+    }
   }
       
   val->type = SYMBOL;
