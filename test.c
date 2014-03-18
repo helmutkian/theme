@@ -24,21 +24,28 @@ enum { EXPECT_FAIL, EXPECT_PASS };
 void test_reader(char *test_name, reader reader, char *input, printer printer, int success)
 {
   struct value val;
+  int result;
   FILE *in;
 
   in = fmemopen(input, strlen(input), "r");
 
   puts(test_name);
+  result = reader(in, &val);
 
-
-  if ((READ_SUCCESS == reader(in, &val)) && success) {
+  if ((READ_SUCCESS == result) && success) {
+    puts("\tPASS");
     printf("\tInput: %s\n", input);
     printf("\tSaw: ");
     printer(stdout, &val);
+  } else if ((READ_SUCCESS == result) && !success) {
+    puts("\tFAIL");
+    printf("\tFailed to reject: %s", input);
   } else if (!success) {
-    printf("\tSuccessfully rejected: %s\n", input);
+    puts("\tPASS");
+    printf("\tSuccessfully rejected: %s", input);
   } else {
-    puts("\tRead test failed");
+    puts("\tFAIL");
+    printf("\tFailed to read: %s", input);
   }
 
   printf("\n");
