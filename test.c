@@ -62,6 +62,7 @@ int main()
   RUN_READ_TEST(fixnum, "-3");
   RUN_READ_TEST(fixnum, "121");
   RUN_READ_TEST(fixnum, "-772");
+  RUN_READ_TEST(fixnum, "12a"); /* Should fail */
 
   RUN_READ_TEST(flonum, "1.121");
   RUN_READ_TEST(flonum, "-65.23");
