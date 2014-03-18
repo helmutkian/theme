@@ -6,8 +6,8 @@
 
 typedef void (*printer)(FILE *, struct value *);
 
-void print_integer(FILE *out, struct value *val);
-void print_real(FILE *out, struct value *val);
+void print_fixnum(FILE *out, struct value *val);
+void print_flonum(FILE *out, struct value *val);
 void print_character(FILE *out, struct value *val);
 void print_string(FILE *out, struct value *val);
 

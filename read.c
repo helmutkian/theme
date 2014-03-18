@@ -90,8 +90,7 @@ int read_flonum(FILE *in, struct value *val)
   if (decimal_seen) {
     val->flonum = atof(buf) * (neg ? -1 : 1);
     val->type = FLONUM;
-    return READ_SUCCESS;
-  } else {
+    return READ_SUCCESS;  } else {
     ungets(buf, in);
     return READ_FAIL;
   }
@@ -141,16 +140,7 @@ int read_character(FILE *in, struct value *val)
     val->character = c;
   }
 
-  if (isspace(c = fgetc(in))) {
-    val->type = CHARACTER;
-    return READ_SUCCESS;
-  } else if (special_str[0]) {
-    ungets(buf, in);
-  } else {
-    ungetc(c, in);
-  }
-
-  return READ_INVALID_CHAR;
+  return READ_SUCCESS;
 }
 
 int read_string(FILE *in, struct value *val)

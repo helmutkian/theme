@@ -1,14 +1,14 @@
 #include "print.h"
 
 
-void print_integer(FILE *out, struct value *val)
+void print_fixnum(FILE *out, struct value *val)
 {
-  fprintf(out, "%d", val->integer);
+  fprintf(out, "%d", val->fixnum);
 }
 
-void print_real(FILE *out, struct value *val)
+void print_flonum(FILE *out, struct value *val)
 {
-  fprintf(out, "%f", val->real);
+  fprintf(out, "%f", val->flonum);
 }
 
 void print_character(FILE *out, struct value *val)
