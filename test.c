@@ -8,12 +8,12 @@
 #define GET_READ_TEST(type_) test_read_##type_
 
 #define DEF_READ_TEST(type_) \
-    void GET_READ_TEST(type_)(char *s, int should_pass)\
+  void GET_READ_TEST(type_)(char *s, char *e, int should_pass)	\
     {\
-      test_reader(#type_ , GET_READER(type_), s, GET_PRINTER(type_), should_pass);\
+      test_reader(#type_ , GET_READER(type_), s, e, GET_PRINTER(type_), should_pass); \
     }
 
-#define RUN_READ_TEST(type_, s_, pass_) GET_READ_TEST(type_)(s_, pass_)
+#define RUN_READ_TEST(type_, s_, e_, pass_) GET_READ_TEST(type_)(s_, e_, pass_)
 
 enum { EXPECT_FAIL, EXPECT_PASS };
 
@@ -21,7 +21,7 @@ enum { EXPECT_FAIL, EXPECT_PASS };
 // Reader test constructor
 // ************************************************************
 
-void test_reader(char *test_name, reader reader, char *input, printer printer, int should_pass)
+void test_reader(char *test_name, reader reader, char *input, char *expected, printer printer, int should_pass)
 {
   struct value val;
   int result, success;
@@ -37,7 +37,7 @@ void test_reader(char *test_name, reader reader, char *input, printer printer, i
   if (should_pass && (READ_SUCCESS == result)) {
     printer(out, &val);
     fclose(out);
-    if (!strcmp(output, input)) 
+    if (!strcmp(output, expected)) 
       success = 1;
     else 
       success = 0;
@@ -75,24 +75,24 @@ DEF_READ_TEST(string);
 int main()
 {
 
-  RUN_READ_TEST(fixnum, "1", EXPECT_PASS);
-  RUN_READ_TEST(fixnum, "-3", EXPECT_PASS);
-  RUN_READ_TEST(fixnum, "121", EXPECT_PASS);
-  RUN_READ_TEST(fixnum, "-772", EXPECT_PASS);
-  RUN_READ_TEST(fixnum, "12a", EXPECT_FAIL); 
+  RUN_READ_TEST(fixnum, "1", "1", EXPECT_PASS);
+  RUN_READ_TEST(fixnum, "-3", "-3", EXPECT_PASS);
+  RUN_READ_TEST(fixnum, "121", "121", EXPECT_PASS);
+  RUN_READ_TEST(fixnum, "-772", "-772", EXPECT_PASS);
+  RUN_READ_TEST(fixnum, "12a", NULL, EXPECT_FAIL); 
 
-  RUN_READ_TEST(flonum, "1.121", EXPECT_PASS);
-  RUN_READ_TEST(flonum, "-65.23", EXPECT_PASS);
-  RUN_READ_TEST(flonum, ".22", EXPECT_PASS);
-  RUN_READ_TEST(flonum, "+.12", EXPECT_PASS);
+  RUN_READ_TEST(flonum, "1.121", "1.121", EXPECT_PASS);
+  RUN_READ_TEST(flonum, "-65.23", "-65.23", EXPECT_PASS);
+  RUN_READ_TEST(flonum, ".22", "0.22", EXPECT_PASS);
+  RUN_READ_TEST(flonum, "+.12", "0.12", EXPECT_PASS);
   
-  RUN_READ_TEST(character, "#\\a", EXPECT_PASS);
-  RUN_READ_TEST(character, "#\\1", EXPECT_PASS);
-  RUN_READ_TEST(character, "#\\F", EXPECT_PASS);
-  RUN_READ_TEST(character, "#\\newline", EXPECT_PASS);
+  RUN_READ_TEST(character, "#\\a", "a", EXPECT_PASS);
+  RUN_READ_TEST(character, "#\\1", "1", EXPECT_PASS);
+  RUN_READ_TEST(character, "#\\F", "F", EXPECT_PASS);
+  RUN_READ_TEST(character, "#\\newline", "\n", EXPECT_PASS);
 
-  RUN_READ_TEST(string, "\"hello world\"", EXPECT_PASS);
-  RUN_READ_TEST(string, "\" \\\"quoted\\\" \"", EXPECT_PASS);
+  RUN_READ_TEST(string, "\"hello world\"", "hello world", EXPECT_PASS);
+  RUN_READ_TEST(string, "\" \\\"quoted\\\" \"", " \"quoted\" ", EXPECT_PASS);
 
   return 0;
 }
