@@ -8,9 +8,9 @@
 #define GET_READ_TEST(type_) test_read_##type_
 
 #define DEF_READ_TEST(type_) \
-    void GET_READ_TEST(type_)(char *s, int success)\
+    void GET_READ_TEST(type_)(char *s, int should_pass)\
     {\
-      test_reader(#type_ , GET_READER(type_), s, GET_PRINTER(type_), success);\
+      test_reader(#type_ , GET_READER(type_), s, GET_PRINTER(type_), should_pass);\
     }
 
 #define RUN_READ_TEST(type_, s_, pass_) GET_READ_TEST(type_)(s_, pass_)
@@ -21,33 +21,39 @@ enum { EXPECT_FAIL, EXPECT_PASS };
 // Reader test constructor
 // ************************************************************
 
-void test_reader(char *test_name, reader reader, char *input, printer printer, int success)
+void test_reader(char *test_name, reader reader, char *input, printer printer, int should_pass)
 {
   struct value val;
-  int result;
-  FILE *in;
+  int result, success;
+  char output[256] = {0};
+  FILE *in, *out;
 
   in = fmemopen(input, strlen(input), "r");
+  out = fmemopen(output, 256, "w");
 
   puts(test_name);
   result = reader(in, &val);
-
-  if ((READ_SUCCESS == result) && success) {
-    puts("\tPASS");
-    printf("\tInput: %s\n", input);
-    printf("\tSaw: ");
-    printer(stdout, &val);
-  } else if ((READ_SUCCESS == result) && !success) {
-    puts("\tFAIL");
-    printf("\tFailed to reject: %s", input);
-  } else if (!success) {
-    puts("\tPASS");
-    printf("\tSuccessfully rejected: %s", input);
+  
+  if (should_pass && (READ_SUCCESS == result)) {
+    printer(out, &val);
+    fclose(out);
+    if (!strcmp(output, input)) 
+      success = 1;
+    else 
+      success = 0;
+  } else if ((!should_pass && (READ_SUCCESS == result)) || should_pass) {
+    success = 0;
   } else {
-    puts("\tFAIL");
-    printf("\tFailed to read: %s", input);
+    success = 1;
   }
-
+	     
+  if (success) 
+    puts("\tPASS");
+  else if (!success && (READ_SUCCESS == result)) 
+    printf("\tFAIL: Expected: %s\n\t      Saw: %s", input, output);
+  else 
+    printf("\tFAIL: Failed to reject %s", input);
+  
   printf("\n");
 
   fclose(in);
