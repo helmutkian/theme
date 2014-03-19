@@ -60,6 +60,7 @@ DEF_READ_TEST(fixnum);
 DEF_READ_TEST(flonum);
 DEF_READ_TEST(character);
 DEF_READ_TEST(string);
+DEF_READ_TEST(symbol);
 
 // ************************************************************
 // Run Tests
@@ -91,6 +92,10 @@ int main()
   RUN_READ_TEST(string, "\"hello world\"", "hello world", EXPECT_PASS);
   RUN_READ_TEST(string, "\" \\\"quoted\\\" \"", " \"quoted\" ", EXPECT_PASS);
   RUN_READ_TEST(string, "\"quotes unclosed", NULL, EXPECT_FAIL);
+  
+  RUN_READ_TEST(symbol, "foo", "foo", EXPECT_PASS);
+  RUN_READ_TEST(symbol, "+", "+", EXPECT_PASS);
+  RUN_READ_TEST(symbol, "foo-bar", "foo-bar", EXPECT_PASS);
 
   return 0;
 }
