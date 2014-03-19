@@ -24,3 +24,8 @@ void print_string(FILE *out, struct value *val)
     fputc(val->string.arr[i], out);
   }
 }
+
+void print_symbol(FILE *out, struct value *val)
+{
+  printf("%s", val->symbol);
+}
