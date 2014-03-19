@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "read.h"
 #include "print.h"
 
@@ -24,38 +25,30 @@ enum { EXPECT_FAIL, EXPECT_PASS };
 void test_reader(char *test_name, reader reader, char *input, char *expected, printer printer, int should_pass)
 {
   struct value val;
-  int result, success;
-  char output[256] = {0};
+  int buf_size, pass = 0;
+  char output[256];
   FILE *in, *out;
 
   in = fmemopen(input, strlen(input), "r");
-  out = fmemopen(output, 256, "w");
+  out = fmemopen(output, sizeof(output), "w");
 
   puts(test_name);
-  result = reader(in, &val);
-  
-  if (should_pass && (READ_SUCCESS == result)) {
+
+  if (reader(in, &val) == READ_SUCCESS) {
     printer(out, &val);
     fclose(out);
-    if (!strcmp(output, expected)) 
-      success = 1;
-    else 
-      success = 0;
-  } else if ((!should_pass && (READ_SUCCESS == result)) || should_pass) {
-    success = 0;
-  } else {
-    success = 1;
+    if (!strcmp(output, expected))
+      pass = 1;
   }
-	     
-  if (success) 
+  
+  if ((pass && should_pass) || (!pass && !should_pass))
     puts("\tPASS");
-  else if (!success && (READ_SUCCESS == result)) 
+  else if (!pass && should_pass) 
     printf("\tFAIL: Expected: %s\n\t      Saw: %s", input, output);
   else 
     printf("\tFAIL: Failed to reject %s", input);
   
   printf("\n");
-
   fclose(in);
 }
 

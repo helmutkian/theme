@@ -80,22 +80,21 @@ int read_flonum(FILE *in, struct value *val)
     return READ_FAIL;
   }
 
-  while ((EOF != (c = fgetc(in))) && (i < BUF_LEN)) {
-    if (isdigit(c)) {
-      buf[i] = c;
-    } else if ('.' == c) {
-      buf[i] = c;
+  while (i < BUF_LEN) {
+    c = fgetc(in);
+    if ('.' == c)
       decimal_seen = 1;
-    } else {
+    else if (!isdigit(c)) 
       break;
-    }
+    buf[i] = c;
     i++;
   }
 
   if (decimal_seen) {
     val->flonum = atof(buf) * (neg ? -1 : 1);
     val->type = FLONUM;
-    return READ_SUCCESS;  } else {
+    return READ_SUCCESS;  
+  } else {
     ungets(buf, in);
     return READ_FAIL;
   }
