@@ -73,6 +73,8 @@ int main()
   RUN_READ_TEST(fixnum, "121", "121", EXPECT_PASS);
   RUN_READ_TEST(fixnum, "-772", "-772", EXPECT_PASS);
   RUN_READ_TEST(fixnum, "12a", NULL, EXPECT_FAIL); 
+  RUN_READ_TEST(fixnum, "12.0", NULL, EXPECT_FAIL);
+  RUN_READ_TEST(fixnum, "12'a", "12", EXPECT_PASS);
 
   RUN_READ_TEST(flonum, "1.121", "1.121", EXPECT_PASS);
   RUN_READ_TEST(flonum, "-65.23", "-65.23", EXPECT_PASS);
@@ -83,9 +85,12 @@ int main()
   RUN_READ_TEST(character, "#\\1", "1", EXPECT_PASS);
   RUN_READ_TEST(character, "#\\F", "F", EXPECT_PASS);
   RUN_READ_TEST(character, "#\\newline", "\n", EXPECT_PASS);
+  RUN_READ_TEST(character, "#\\newfoo", NULL, EXPECT_FAIL);
+  RUN_READ_TEST(character, "#n", NULL, EXPECT_FAIL);
 
   RUN_READ_TEST(string, "\"hello world\"", "hello world", EXPECT_PASS);
   RUN_READ_TEST(string, "\" \\\"quoted\\\" \"", " \"quoted\" ", EXPECT_PASS);
+  RUN_READ_TEST(string, "\"quotes unclosed", NULL, EXPECT_FAIL);
 
   return 0;
 }
