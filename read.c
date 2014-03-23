@@ -15,7 +15,7 @@ void ungets(char *s, FILE *f)
 int isdelim(char c)
 {
   
-  return isspace(c) || ('\'' == c) || (';' == c);
+  return isspace(c) || (EOF == c) || ('\'' == c) || (';' == c);
 }
 
 /* (+|-|/0)[0-9]+ where /0 is a null token */
@@ -189,20 +189,30 @@ int read_symbol(FILE *in, struct value *val)
 {
   char c;
   const char valid_chars[] = "~!@#$%^&*-+=/\\";
-  unsigned int i, alpha_seen = 0;
+  unsigned int i, non_numerical_seen = 0;
 
-  for (i = 0; !isspace(c = fgetc(in)); i++) {
-    if (!(isalnum(c) || strchr(valid_chars, c))) {
+  for (i = 0; i < MAX_SYMBOL_SIZE; i++) {
+    c = fgetc(in);
+    if (isdelim(c)) {
+      break;
+    } else if (!(isalnum(c) || strchr(valid_chars, c))) {
       val->symbol[i+1] = 0;
       ungets(val->symbol, in);
       return READ_INVALID_CHAR;
-    } else if (!alpha_seen && isalpha(c)) {
-      alpha_seen = 1;
+    } else if (!isdigit(c) && !non_numerical_seen) {
+      non_numerical_seen = 1;
     }
+    val->symbol[i] = c;
   }
-      
-  val->type = SYMBOL;
-  return READ_SUCCESS;
+  val->symbol[i] = 0;
+   
+  if (!val->symbol[0] || !non_numerical_seen) {
+    ungets(val->symbol, in);
+    return READ_FAIL;
+  } else {
+    val->type = SYMBOL;
+    return READ_SUCCESS;
+  }
 }
       
 // ************************************************************

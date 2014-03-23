@@ -27,5 +27,5 @@ void print_string(FILE *out, struct value *val)
 
 void print_symbol(FILE *out, struct value *val)
 {
-  printf("%s", val->symbol);
+  fprintf(out, "%s", val->symbol);
 }
