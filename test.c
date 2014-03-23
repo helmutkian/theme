@@ -96,6 +96,7 @@ int main()
   RUN_READ_TEST(symbol, "foo", "foo", EXPECT_PASS);
   RUN_READ_TEST(symbol, "+", "+", EXPECT_PASS);
   RUN_READ_TEST(symbol, "foo-bar", "foo-bar", EXPECT_PASS);
+  RUN_READ_TEST(symbol, "123", NULL, EXPECT_FAIL);
 
   return 0;
 }
