@@ -33,5 +33,8 @@ struct value {
   };
 };
 
+struct value *scm_alloc(void);
+void scm_free(struct value *val);
+
 #endif
 
