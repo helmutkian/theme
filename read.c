@@ -185,6 +185,7 @@ int read_string(FILE *in, struct value *val)
   return READ_SUCCESS;
 }
 
+// ([0-9]|(~!@#$%^&*-+=\/)|[a-z])*[a-z]+([0-9]|(~!@#$%^&*-+=\/)|[a-z])
 int read_symbol(FILE *in, struct value *val)
 {
   char c;
