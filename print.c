@@ -29,3 +29,27 @@ void print_symbol(FILE *out, struct value *val)
 {
   fprintf(out, "%s", val->symbol);
 }
+
+void print(FILE *out, struct value *val)
+{
+  switch (val->type) {
+  case FIXNUM:
+    print_fixnum(out, val);
+    break;
+  case FLONUM:
+    print_flonum(out, val);
+    break;
+  case CHARACTER:
+    print_character(out, val);
+    break;
+  case STRING:
+    print_string(out, val);
+    break;
+  case SYMBOL:
+    print_symbol(out, val);
+    break;
+  default:
+    error("No print function defined.");
+    break;
+  }
+}

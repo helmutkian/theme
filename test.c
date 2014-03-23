@@ -11,7 +11,7 @@
 #define DEF_READ_TEST(type_) \
   void GET_READ_TEST(type_)(char *s, char *e, int should_pass)	\
     {\
-      test_reader(#type_ , GET_READER(type_), s, e, GET_PRINTER(type_), should_pass); \
+      test_reader(#type_ , GET_READER(type_), s, e, should_pass); \
     }
 
 #define RUN_READ_TEST(type_, s_, e_, pass_) GET_READ_TEST(type_)(s_, e_, pass_)
@@ -22,7 +22,7 @@ enum { EXPECT_FAIL, EXPECT_PASS };
 // Reader test constructor
 // ************************************************************
 
-void test_reader(char *test_name, reader reader, char *input, char *expected, printer printer, int should_pass)
+void test_reader(char *test_name, reader reader, char *input, char *expected, int should_pass)
 {
   struct value val;
   int buf_size, pass = 0;
@@ -35,7 +35,7 @@ void test_reader(char *test_name, reader reader, char *input, char *expected, pr
   puts(test_name);
 
   if (reader(in, &val) == READ_SUCCESS) {
-    printer(out, &val);
+    print(out, &val);
     fclose(out);
     if (!strcmp(output, expected))
       pass = 1;
