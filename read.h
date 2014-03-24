@@ -22,5 +22,7 @@ int read_flonum(FILE *in, struct value *val);
 int read_character(FILE *in, struct value *val);
 int read_string(FILE *in, struct value *val);
 int read_symbol(FILE *in, struct value *val);
+//int read_pair(FILE *in, struct value *);
+int read(FILE *in, struct value *val);
 
 #endif

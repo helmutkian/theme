@@ -11,7 +11,7 @@
 #define DEF_READ_TEST(type_) \
   void GET_READ_TEST(type_)(char *s, char *e, int should_pass)	\
     {\
-      test_reader(#type_ , GET_READER(type_), s, e, should_pass); \
+      test_reader(#type_ , s, e, should_pass); \
     }
 
 #define RUN_READ_TEST(type_, s_, e_, pass_) GET_READ_TEST(type_)(s_, e_, pass_)
@@ -22,7 +22,7 @@ enum { EXPECT_FAIL, EXPECT_PASS };
 // Reader test constructor
 // ************************************************************
 
-void test_reader(char *test_name, reader reader, char *input, char *expected, int should_pass)
+void test_reader(char *test_name, char *input, char *expected, int should_pass)
 {
   struct value val;
   int buf_size, pass = 0;
@@ -34,7 +34,7 @@ void test_reader(char *test_name, reader reader, char *input, char *expected, in
 
   puts(test_name);
 
-  if (reader(in, &val) == READ_SUCCESS) {
+  if (read(in, &val) == READ_SUCCESS) {
     print(out, &val);
     fclose(out);
     if (!strcmp(output, expected))
@@ -73,8 +73,8 @@ int main()
   RUN_READ_TEST(fixnum, "-3", "-3", EXPECT_PASS);
   RUN_READ_TEST(fixnum, "121", "121", EXPECT_PASS);
   RUN_READ_TEST(fixnum, "-772", "-772", EXPECT_PASS);
-  RUN_READ_TEST(fixnum, "12a", NULL, EXPECT_FAIL); 
-  RUN_READ_TEST(fixnum, "12.0", NULL, EXPECT_FAIL);
+  RUN_READ_TEST(fixnum, "12a", "", EXPECT_FAIL); 
+  RUN_READ_TEST(fixnum, "12.0", "", EXPECT_FAIL);
   RUN_READ_TEST(fixnum, "12'a", "12", EXPECT_PASS);
 
   RUN_READ_TEST(flonum, "1.121", "1.121", EXPECT_PASS);
@@ -86,17 +86,17 @@ int main()
   RUN_READ_TEST(character, "#\\1", "1", EXPECT_PASS);
   RUN_READ_TEST(character, "#\\F", "F", EXPECT_PASS);
   RUN_READ_TEST(character, "#\\newline", "\n", EXPECT_PASS);
-  RUN_READ_TEST(character, "#\\newfoo", NULL, EXPECT_FAIL);
-  RUN_READ_TEST(character, "#n", NULL, EXPECT_FAIL);
+  RUN_READ_TEST(character, "#\\newfoo", "", EXPECT_FAIL);
+  RUN_READ_TEST(character, "#n", "", EXPECT_FAIL);
 
   RUN_READ_TEST(string, "\"hello world\"", "hello world", EXPECT_PASS);
   RUN_READ_TEST(string, "\" \\\"quoted\\\" \"", " \"quoted\" ", EXPECT_PASS);
-  RUN_READ_TEST(string, "\"quotes unclosed", NULL, EXPECT_FAIL);
+  RUN_READ_TEST(string, "\"quotes unclosed", "", EXPECT_FAIL);
   
   RUN_READ_TEST(symbol, "foo", "foo", EXPECT_PASS);
   RUN_READ_TEST(symbol, "+", "+", EXPECT_PASS);
   RUN_READ_TEST(symbol, "foo-bar", "foo-bar", EXPECT_PASS);
-  RUN_READ_TEST(symbol, "123", NULL, EXPECT_FAIL);
+  RUN_READ_TEST(symbol, "123", "", EXPECT_FAIL);
 
   return 0;
 }

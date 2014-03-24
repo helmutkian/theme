@@ -5,11 +5,10 @@
 
 void ungets(char *s, FILE *f)
 {
-  int i;
-  
-  for (i = 0; s[i] != 0; i++) {
-    ungetc(s[i], f);
-  }
+  int len = strlen(s);
+
+  fseek(f, -len, SEEK_CUR);
+
 }
 
 int isdelim(char c)
@@ -23,37 +22,39 @@ int read_fixnum(FILE *in, struct value *val)
 {
   char c;
   char buf[BUF_LEN] = {0};
-  unsigned int i = 0, neg = 0;
+  unsigned int digit_seen = 0, i = 0;
 
   c = fgetc(in);
-
-  if ('-' == c) {
-    neg = 1;
-  } else if (isdigit(c)) {
-    buf[i++] = c;
-  } else if ((EOF == c) || (c != '+')) {
+  
+  if (isdigit(c)) {
+    digit_seen = 1;
+  } else if ((c != '+') && (c != '-')) {
     ungetc(c, in);
     return READ_FAIL;
-  }
+  } 
+
+  buf[i++] = c;
     
-  while ((EOF != (c = fgetc(in))) && (i < BUF_LEN)) {
-    if (isdigit(c)) { 
-      buf[i] = c;
-    } else if (isdelim(c)) {
-      ungetc(c, in);
+  while (i < BUF_LEN) {
+    c = fgetc(in);
+    buf[i++] = c;
+    if (isdelim(c)) {
       break;
+    } else if (isdigit(c)) { 
+      digit_seen = 1;
     } else {
       ungets(buf, in);
       return READ_INVALID_CHAR;
     }
-    i++;
   }
 
-  if (buf[0] != 0) {
+  if (digit_seen) {
     val->type = FIXNUM;
-    val->fixnum = atoi(buf) * (neg ? -1 : 1);
+    val->fixnum = atoi(buf);
+    ungetc(c, in); // Return delimiter to stream.
     return READ_SUCCESS;
   } else {
+    ungets(buf, in);
     return READ_FAIL;
   }
 }
@@ -63,35 +64,40 @@ int read_flonum(FILE *in, struct value *val)
 {
   char c;
   char buf[BUF_LEN] = {0};
-  unsigned int i = 0, neg = 0, decimal_seen = 0;
+  unsigned int i = 0, digit_seen = 0, decimal_seen = 0;
     
   c = fgetc(in);
- 
-  if ('-' == c) {
-    neg = 1;
-  } else if (isdigit(c)) {
-    buf[i++] = c;
-  } else if ('.' == c) {
+
+  if ('.' == c) {
     decimal_seen = 1;
     buf[i++] = '0';
-    buf[i++] = '.';
-  } else if ((EOF == c) || (c != '+')) {
+  } else if (isdigit(c)) {
+    digit_seen = 1;
+  } else if ((c != '+') && (c != '-')) {
     ungetc(c, in);
     return READ_FAIL;
   }
 
+  buf[i++] = c;
+
   while (i < BUF_LEN) {
     c = fgetc(in);
-    if ('.' == c)
+    buf[i++] = c;
+    if ('.' == c) {
       decimal_seen = 1;
-    else if (!isdigit(c)) 
+      if (!digit_seen)
+	buf[i++] = '0';
+      else 
+	digit_seen = 0;
+    }
+    else if (!isdigit(c)) { 
       break;
-    buf[i] = c;
-    i++;
+    }
+    digit_seen = 1;
   }
 
-  if (decimal_seen) {
-    val->flonum = atof(buf) * (neg ? -1 : 1);
+  if (decimal_seen && digit_seen) {
+    val->flonum = (double)atof(buf);
     val->type = FLONUM;
     return READ_SUCCESS;  
   } else {
@@ -144,6 +150,7 @@ int read_character(FILE *in, struct value *val)
     val->character = c;
   }
 
+  val->type = CHARACTER;
   return READ_SUCCESS;
 }
 
@@ -200,7 +207,7 @@ int read_symbol(FILE *in, struct value *val)
       val->symbol[i+1] = 0;
       ungets(val->symbol, in);
       return READ_INVALID_CHAR;
-    } else if (!isdigit(c) && !non_numerical_seen) {
+    } else if (!non_numerical_seen && !isdigit(c)) {
       non_numerical_seen = 1;
     }
     val->symbol[i] = c;
@@ -215,8 +222,63 @@ int read_symbol(FILE *in, struct value *val)
     return READ_SUCCESS;
   }
 }
+  
+/*    
+int read_pair(FILE *in, struct value *val)
+{
+  char c;
+  struct value *pair;
+  Stack stack = NULL;
+  int dotted = 0;
+
+  c = fgetc(in);
+  if ('(' == c) {
+    val->type = PAIR;
+    pair = val;
+  }
       
-// ************************************************************
-// ************************************************************
+  for (;;) {
+    c = fgetc(in);
+    if ('(' == c) {
+      pair->car = scm_alloc();
+      pair->car->type = PAIR;
+      stack_push(stack, pair);
+      pair = stack_top(stack)->car;
+    } else if ('.' == c) { 
+      dotted = 1;
+    } else if (')' == c) {
+      if (!dotted) 
+	pair->cdr = NULL;
+      pair = stack_pop(stack);
+    } else if ((dotted && !(read(in, pair->cdr) != READ_SUCCESS))
+	       read(in, pair->car) != READ_SUCCESS) {
+      return READ_FAIL;
+    }
+
+    pair->cdr = scm_alloc();
+    pair->cdr->type = PAIR;
+    pair = pair->cdr;
+  }
+
+  
+}
+*/
+
+int read(FILE *in, struct value *val)
+{
+  reader readers[] = {read_fixnum, read_flonum, read_character, read_string, read_symbol, /* read_pair, */ NULL};
+  int i, result;
+
+  for (i = 0; readers[i] != NULL; i++) {
+    result = readers[i](in, val);
+    if (READ_SUCCESS == result) 
+      return READ_SUCCESS;
+    else if (READ_MISMATCH_DELIM == result)
+      return READ_MISMATCH_DELIM;
+  }
+
+  return READ_FAIL;
+}
+  
 
 
