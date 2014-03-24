@@ -1,11 +1,13 @@
 #include "scm_value.h"
 
-struct value *scm_alloc(void)
+Scm_Value *Scm_alloc(Scm_Type type)
 {
-  return malloc(sizeof(struct value));
+  ScmValue *val = malloc(sizeof(Scm_Value));
+  val->type = type;
+  return val;
 }
 
-void scm_free(struct value *val)
+void Scm_free(Scm_Value *val)
 {
   free(val);
 }
