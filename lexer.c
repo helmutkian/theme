@@ -1,7 +1,9 @@
 #include "lexer.h"
 #include <ctype.h>
+#include <string.h>
+#include <stdio.h>
 
-#define cur(lexer_) ##lexer_->buf[##lexer_->pos]
+#define cur(lexer_) (lexer_)->buf[(lexer_)->pos]
 
 static int _is_delim(char c);
 static Scm_Token _find_start_pos(Scm_Lexer *lexer);
@@ -27,7 +29,7 @@ Scm_Token _find_start_pos(Scm_Lexer *lexer)
       do {
 	lexer->pos++;
 	// Endline comment must end in newline
-	if (!lexer(cur)) 
+	if (!cur(lexer)) 
 	  return TOKEN_ERROR;
       } while ('\n' != cur(lexer));
     } else if ('#' == cur(lexer)) { // Block comments
@@ -65,17 +67,17 @@ Scm_Token _lex_string(Scm_Lexer *lexer)
     if ('\\' == cur(lexer)) { // Handle escape chars
       lexer->pos++;
       if ('n' == tolower(curr(lexer))) 
-	lexer->lexeme->string[i] = '\n';
+	lexer->lexeme->string.arr[i] = '\n';
       else if ('t' == tolower(curr(lexer)))
-	lexer->lexeme->string[i] = '\t';
+	lexer->lexeme->string.arr[i] = '\t';
       else if ('\\' == curr(lexer)) 
-	lexer->lexeme->string[i] = '\\';
+	lexer->lexeme->string.arr[i] = '\\';
       else 
 	goto err;
     } else if (!curr(lexer)) { // No close quote
       goto err;
     } else {
-      lexer->lexeme->string[i] = curr(lexer);
+      lexer->lexeme->string.arr[i] = curr(lexer);
     }
   }
 	
@@ -97,11 +99,11 @@ Scm_Token _lex_character(Scm_Lexer *lexer)
   switch (tolower(curr(lexer))) {
   case 'n':
     strcpy(char_name, "newline");
-    named_char = '\n'
+    named_char = '\n';
     break;
   case 't':
     strcpy(char_name, "tab");
-    named_char = '\t'
+    named_char = '\t';
     break;
   case 's':
     strcpy(char_name, "space");

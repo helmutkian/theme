@@ -1,8 +1,10 @@
 #include "scm_value.h"
 
+#include <stdlib.h>
+
 Scm_Value *Scm_alloc(Scm_Type type)
 {
-  ScmValue *val = malloc(sizeof(Scm_Value));
+  Scm_Value *val = malloc(sizeof(Scm_Value));
   val->type = type;
   return val;
 }

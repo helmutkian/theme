@@ -1,6 +1,8 @@
 #ifndef _LEXER_H_
 #define _LEXER_H_
 
+#include "scm_value.h"
+
 typedef enum {
     TOKEN_ERROR
   , TOKEN_EOF

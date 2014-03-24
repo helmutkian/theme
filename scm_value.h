@@ -19,7 +19,7 @@ typedef struct {
   char arr[MAX_STRING_SIZE];
 } Scm_String;
 
-struct Scm_Value {
+typedef struct Scm_Value {
   int type;
   union {
     int           fixnum;
