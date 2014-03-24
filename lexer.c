@@ -38,11 +38,10 @@ Scm_Token _find_start_pos(Scm_Lexer *lexer)
 	  lexer->pos++;
 	  if ('|' == cur(lexer)) {
 	    lexer->pos++;
-	    if ('#' == cur(lexer)) {
+	    if ('#' == cur(lexer)) 
 	      break;
-	    } else {
+	    else 
 	      lexer->pos--;
-	    }
 	  } else if (!cur(lexer)) { // EOF before block end => ERROR
 	    return TOKEN_ERROR;
 	  }
@@ -89,7 +88,7 @@ Scm_Token _lex_string(Scm_Lexer *lexer)
 
 Scm_Token _lex_character(Scm_Lexer *lexer)
 {
-  int i = 1; // Position offset of ensuring delimiter after char literal
+  int i = 1; // Position offset to ensure a delimiter after char literal
   char c, named_char;
   char char_name[15] = {0};
 
@@ -115,7 +114,7 @@ Scm_Token _lex_character(Scm_Lexer *lexer)
   if (!char_name[0]) {
     lexer->lexeme->character = curr(lexer);
   } else { 
-    for (i = 0; !char_name[i]; i++) {
+    for (i = 0; char_name[i]; i++) {
       c = lexer->buf[lexer->pos + i];
       if (!c || (tolower(c) != char_name[i])) 
 	goto err;
