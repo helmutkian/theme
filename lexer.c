@@ -9,12 +9,20 @@ static int _is_delim(char c);
 static Scm_Token _find_start_pos(Scm_Lexer *lexer);
 static Scm_Token _lex_string(Scm_Lexer *lexer);
 static Scm_Token _lex_character(Scm_Lexer *lexer);
+static Scm_Token _lex_number(Scm_Lexer *lexer);
 
 int _is_delim(char c)
 {
   char delims[] = "();'";
 
-  return isspace(c) || (EOF == c) || strchr(delims, c);
+  return isspace(c) || (EOF == c) || !c || strchr(delims, c);
+}
+
+int _is_symbol_char(char c)
+{
+  char sym_chars[] = "~!@#$%^&*-_=+<?\\/";
+
+  return isalnum(c) || strchr(sym_chars, c);
 }
  
 // Advances the position of the lexer in its buffer beyond any
@@ -147,7 +155,81 @@ Scm_Token _lex_boolean(Scm_Lexer *lexer)
     return TOKEN_ERROR;
   }
 }
-  
+
+Scm_Token _lex_number(Scm_Lexer *lexer)
+{
+  char c;
+  int state, i, integral = 0, sign = 1;
+  double fractional, frac_pos;
+ 
+  enum { START, INTEGRAL, FRAC_START, FRAC_LOOP, ERROR };
+
+  state = START;
+
+  for (i = 0; ;i++) {
+    c = lexer->buf[lexer->pos + i];
+    switch (state) {
+    case START:
+      if (isdigit(c)) {
+	integral = c - '0';
+	state = INTEGRAL;
+      } else if ('.' == c) {
+	state = FRAC_START;
+      } else if ('-' == c) {
+	sign = -1;
+      } else if (c != '+') {
+	state = ERROR;
+      }
+      break;
+    case INTEGRAL:
+      if (isdigit(c)) 
+	integral = (integral * 10) + (c - '0');
+      else if ('.' == c) 
+	state = FRAC_START;
+      else if (_is_delim(c))
+	goto success;
+      else 
+	state = ERROR;
+      break;
+    case FRAC_START:
+      if (isdigit(c)) {
+	frac_pos = 0.1;
+	fractional = (c - '0') * frac_pos;
+      } else {
+	state = ERROR;
+      }
+      break;
+    case FRAC_LOOP:
+      if (isdigit(c)) {
+	frac_pos *= 0.1;
+	fractional += (c - '0') * frac_pos;
+      } else if (_is_delim(c)) {
+	goto success;
+      } else {
+	state = ERROR;
+      }
+      break;
+    case ERROR:
+      return TOKEN_ERROR;
+      break;
+    default:
+      break;
+    }
+  }
+
+ success:
+
+  if (INTEGRAL == state) {
+    lexer->lexeme = Scm_alloc(TYPE_FIXNUM);
+    lexer->lexeme->fixnum = integral * sign;
+  } else {
+    lexer->lexeme = Scm_alloc(TYPE_FLONUM);
+    lexer->lexeme->flonum = (integral + fractional) * sign;
+  }
+
+  lexer->pos += i;
+  return TOKEN_LITERAL;
+}
     
 
 Scm_Token Scm_lex(Scm_Lexer *lexer)
@@ -174,9 +256,13 @@ Scm_Token Scm_lex(Scm_Lexer *lexer)
   }
 
 
-  // TODO: Finish & implement _lex_boolean
-
+  if (TOKEN_LITERAL == _lex_number(lexer))
+    return TOKEN_LITERAL;
+  else
+    return _lex_symbol(lexer);
 }
+    
+
       
  
     
