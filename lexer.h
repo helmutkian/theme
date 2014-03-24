@@ -17,4 +17,6 @@ typedef struct {
   Scm_Value *lexeme;
 } Scm_Lexer;
 
+Scm_Token Scm_lex(Scm_Lexer *lexer);
+
 #endif
