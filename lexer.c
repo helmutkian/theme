@@ -92,8 +92,8 @@ Scm_Token _lex_string(Scm_Lexer *lexer)
 
 Scm_Token _lex_character(Scm_Lexer *lexer)
 {
-  int i = 1; // Position offset to ensure a delimiter after char literal
-  char c, named_char;
+  int i; 
+  char named_char;
   char char_name[15] = {0};
 
   lexer->lexeme = Scm_alloc(TYPE_CHARACTER);
@@ -119,14 +119,14 @@ Scm_Token _lex_character(Scm_Lexer *lexer)
     lexer->lexeme->character = cur(lexer);
   } else { 
     for (i = 0; char_name[i]; i++) {
-      c = lexer->buf[lexer->pos + i];
-      if (!c || (tolower(c) != char_name[i])) 
+      lexer->pos++;
+      if (!cur(lexer) || (tolower(cur(lexer)) != char_name[i])) 
 	goto err;
     }
     lexer->lexeme->character = named_char;
   }
 
-  if (_is_delim(lexer->buf[lexer->pos + i]))
+  if (_is_delim(lexer->buf[lexer->pos + 1]))
     return TOKEN_LITERAL;
 
  err:
@@ -172,6 +172,7 @@ Scm_Token Scm_lex(Scm_Lexer *lexer)
     lexer->pos--;
     break;
   }
+
 
   // TODO: Finish & implement _lex_boolean
 
