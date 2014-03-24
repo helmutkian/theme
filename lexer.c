@@ -151,7 +151,7 @@ Scm_Token Scm_lex(Scm_Lexer *lexer)
     else 
       return _lex_boolean(lexer);
   default: 
-    lexer->position--;
+    lexer->pos--;
     break;
   }
 
