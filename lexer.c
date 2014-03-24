@@ -12,7 +12,7 @@ static Scm_Token _lex_character(Scm_Lexer *lexer);
 
 int _is_delim(char c)
 {
-  char delims[] = "();";
+  char delims[] = "();'";
 
   return isspace(c) || (EOF == c) || strchr(delims, c);
 }
@@ -134,6 +134,20 @@ Scm_Token _lex_character(Scm_Lexer *lexer)
   return TOKEN_ERROR;
 }
 
+Scm_Token _lex_boolean(Scm_Lexer *lexer)
+{
+  lexer->lexeme = Scm_alloc(TYPE_BOOLEAN);
+  
+  if ((('t' == tolower(cur(lexer))) || ('f' == tolower(cur(lexer))))
+      && (_is_delim(lexer->buf[lexer->pos + 1]))) {
+    lexer->lexeme->boolean = 't' == tolower(cur(lexer));
+    return TOKEN_LITERAL;
+  } else {
+    Scm_free(lexer->lexeme);
+    return TOKEN_ERROR;
+  }
+}
+  
     
 
 Scm_Token Scm_lex(Scm_Lexer *lexer)

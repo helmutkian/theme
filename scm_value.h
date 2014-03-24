@@ -24,6 +24,7 @@ typedef struct Scm_Value {
   union {
     int           fixnum;
     double        flonum;
+    unsigned char boolean;
     char          character;
     char          symbol[MAX_SYMBOL_SIZE]; // cstring
     Scm_String    string;
