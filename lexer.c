@@ -244,7 +244,8 @@ Scm_Token Scm_lex(Scm_Lexer *lexer)
   case '.': return TOKEN_DOT;
   case '(': return TOKEN_OPEN_PAREN;
   case ')': return TOKEN_CLOSE_PAREN;
-  case '"': return _lex_string(lexer);
+  case '\'': return TOKEN_QUOTE;
+  case '\"': return _lex_string(lexer);
   case '#':
     if ('\\' == cur(lexer)) 
       return _lex_character(lexer);
