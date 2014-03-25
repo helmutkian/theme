@@ -70,31 +70,31 @@ Scm_Token _find_start_pos(Scm_Lexer *lexer)
 Scm_Token _lex_string(Scm_Lexer *lexer)
 {
   int i;
-  lexer->lexeme = Scm_alloc(TYPE_STRING);
+  lexer->value = Scm_alloc(TYPE_STRING);
 
   for (i = 0; cur(lexer) != '"'; i++) {
     lexer->pos++;
     if ('\\' == cur(lexer)) { // Handle escape chars
       lexer->pos++;
       if ('n' == tolower(cur(lexer))) 
-	lexer->lexeme->string.arr[i] = '\n';
+	lexer->value->string.arr[i] = '\n';
       else if ('t' == tolower(cur(lexer)))
-	lexer->lexeme->string.arr[i] = '\t';
+	lexer->value->string.arr[i] = '\t';
       else if ('\\' == cur(lexer)) 
-	lexer->lexeme->string.arr[i] = '\\';
+	lexer->value->string.arr[i] = '\\';
       else 
 	goto err;
     } else if (!cur(lexer)) { // No close quote
       goto err;
     } else {
-      lexer->lexeme->string.arr[i] = cur(lexer);
+      lexer->value->string.arr[i] = cur(lexer);
     }
   }
 	
   return TOKEN_LITERAL;
 
  err:
-  Scm_free(lexer->lexeme);
+  Scm_free(lexer->value);
   return TOKEN_ERROR;
 }
 
@@ -104,7 +104,7 @@ Scm_Token _lex_character(Scm_Lexer *lexer)
   char named_char;
   char char_name[15] = {0};
 
-  lexer->lexeme = Scm_alloc(TYPE_CHARACTER);
+  lexer->value = Scm_alloc(TYPE_CHARACTER);
 
   switch (tolower(cur(lexer))) {
   case 'n':
@@ -124,34 +124,34 @@ Scm_Token _lex_character(Scm_Lexer *lexer)
   }
 
   if (!char_name[0]) {
-    lexer->lexeme->character = cur(lexer);
+    lexer->value->character = cur(lexer);
   } else { 
     for (i = 0; char_name[i]; i++) {
       lexer->pos++;
       if (!cur(lexer) || (tolower(cur(lexer)) != char_name[i])) 
 	goto err;
     }
-    lexer->lexeme->character = named_char;
+    lexer->value->character = named_char;
   }
 
   if (_is_delim(lexer->buf[lexer->pos + 1]))
     return TOKEN_LITERAL;
 
  err:
-  Scm_free(lexer->lexeme);
+  Scm_free(lexer->value);
   return TOKEN_ERROR;
 }
 
 Scm_Token _lex_boolean(Scm_Lexer *lexer)
 {
-  lexer->lexeme = Scm_alloc(TYPE_BOOLEAN);
+  lexer->value = Scm_alloc(TYPE_BOOLEAN);
   
   if ((('t' == tolower(cur(lexer))) || ('f' == tolower(cur(lexer))))
       && (_is_delim(lexer->buf[lexer->pos + 1]))) {
-    lexer->lexeme->boolean = 't' == tolower(cur(lexer));
+    lexer->value->boolean = 't' == tolower(cur(lexer));
     return TOKEN_LITERAL;
   } else {
-    Scm_free(lexer->lexeme);
+    Scm_free(lexer->value);
     return TOKEN_ERROR;
   }
 }
@@ -220,11 +220,11 @@ Scm_Token _lex_number(Scm_Lexer *lexer)
  success:
 
   if (INTEGRAL == state) {
-    lexer->lexeme = Scm_alloc(TYPE_FIXNUM);
-    lexer->lexeme->fixnum = integral * sign;
+    lexer->value = Scm_alloc(TYPE_FIXNUM);
+    lexer->value->fixnum = integral * sign;
   } else {
-    lexer->lexeme = Scm_alloc(TYPE_FLONUM);
-    lexer->lexeme->flonum = (integral + fractional) * sign;
+    lexer->value = Scm_alloc(TYPE_FLONUM);
+    lexer->value->flonum = (integral + fractional) * sign;
   }
 
   lexer->pos += i;

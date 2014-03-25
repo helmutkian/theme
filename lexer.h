@@ -16,7 +16,7 @@ typedef enum {
 typedef struct {
   char *buf;
   unsigned int pos;
-  Scm_Value *lexeme;
+  Scm_Value *value;
 } Scm_Lexer;
 
 Scm_Token Scm_lex(Scm_Lexer *lexer);
